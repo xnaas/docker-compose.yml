@@ -1,0 +1,369 @@
+version: "3.7"
+services:
+  # Caddy
+  caddy:
+    image: xnaas/caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "443:443"
+    networks:
+      - irc
+      - music
+      - nitter
+      - plex
+      - rss
+      - tesla
+      - wikijs
+      - youtubedl
+    volumes:
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./zz_shared:/www/shared:ro
+      - /mnt/media/p.xnaas.info:/www/p.xnaas.info:ro
+      - /mnt/media/websites:/www/websites:ro
+      - /mnt/media/ShareX/Screenshots/temp:/www/tmp:ro
+      - /mnt/media/public:/www/download:ro
+    env_file:
+      - ./envs/common.env
+      - ./envs/caddy.env
+  # IRC
+  thelounge:
+    image: thelounge/thelounge:4.3.0-pre.1-alpine
+    container_name: thelounge
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+    ports:
+      - "59000:9000"
+    networks:
+      - irc
+    volumes:
+      - ./thelounge:/var/opt/thelounge
+      # - ./thelounge-themes:/usr/local/share/.config/yarn/global/node_modules/thelounge/public/themes
+    env_file: ./envs/common.env
+  ircd:
+    image: oragono/oragono:v2.5.1
+    container_name: ircd
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+    ports:
+      - "6667:6667"
+      - "6697:6697"
+    networks:
+      - irc
+    volumes:
+      - ./ircd:/ircd
+    env_file: ./envs/common.env
+  # Matterbridge
+  matterbridge:
+    image: 42wim/matterbridge:stable
+    container_name: matterbridge
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    networks:
+      - irc
+      - mumble
+    volumes:
+      - ./matterbridge:/etc/matterbridge
+    env_file: ./envs/common.env
+  # Minecraft
+  minecraft:
+    image: itzg/minecraft-bedrock-server:latest
+    container_name: minecraft
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "19132:19132/udp"
+    networks:
+      - minecraft
+    volumes:
+      - ./minecraft:/data
+    env_file:
+      - ./envs/common.env
+      - ./envs/minecraft.env
+  # Mumble/Murmur
+  mumble:
+    image: xnaas/murmur:latest
+    container_name: mumble
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "64738:64738/tcp"
+      - "64738:64738/udp"
+    networks:
+      - mumble
+    volumes:
+      - ./mumble:/data
+    env_file: ./envs/common.env
+  # Music
+  music:
+    image: deluan/navidrome:latest
+    container_name: music
+    restart: unless-stopped
+    user: 1000:1000
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "4533:4533"
+    networks:
+      - music
+    volumes:
+      - ./music:/data
+      - /mnt/media/music:/music:ro
+    env_file:
+      - ./envs/common.env
+      - ./envs/music.env
+  # Nitter
+  nitter:
+    image: zedeus/nitter:latest
+    container_name: nitter
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "58080:8080"
+    networks:
+      - nitter
+    volumes:
+      - ./nitter/nitter.conf:/src/nitter.conf
+    env_file: ./envs/common.env
+  # Plex
+  plex:
+    image: ghcr.io/linuxserver/plex:latest
+    container_name: plex
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    network_mode: host
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - ./plex/appdata:/config
+      - ./plex/transcode:/tmp
+      - /mnt/media/TV:/data/tvshows:ro
+      - /mnt/media/Movies:/data/movies:ro
+      - /mnt/media/Anime:/data/anime:ro
+      - /mnt/media/Hentai:/data/hentai:ro
+      - /mnt/media/4k-Movies:/data/movies-4k:ro
+      - /mnt/media/4k-TV:/data/4k-TV:ro
+      - ./zz_shared:/shared:ro
+    env_file:
+      - ./envs/common.env
+      - ./envs/plex.env
+  plexpy:
+    container_name: plexpy
+    image: tautulli/tautulli:beta
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "8181:8181"
+    networks:
+      - plex
+    volumes:
+      - ./plexpy/config:/config
+      - ./plex/appdata/Library/Application Support/Plex Media Server/Logs:/logs:ro
+      - ./zz_shared:/shared:ro
+    env_file: ./envs/common.env
+  ombi:
+    container_name: ombi
+    image: ghcr.io/linuxserver/ombi:development
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "3579:3579"
+    networks:
+      - plex
+    volumes:
+      - ./ombi:/config
+    env_file: ./envs/common.env
+  # RSS
+  rss:
+    image: ghcr.io/linuxserver/freshrss:latest
+    container_name: rss
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "47602:80"
+    networks:
+      - rss
+    volumes:
+      - ./rss:/config
+    env_file: ./envs/common.env
+  rss-bridge:
+    image: rssbridge/rss-bridge:stable
+    container_name: rss-bridge
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "51080:80"
+    networks:
+      - rss
+    volumes:
+      - ./rss-bridge/whitelist.txt:/app/whitelist.txt
+      - ./rss-bridge/config.ini.php:/app/config.ini.php
+    env_file: ./envs/common.env
+  # Tesla
+  teslamate:
+    image: teslamate/teslamate:latest
+    container_name: teslamate
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    cap_drop:
+      - all
+    ports:
+      - "50110:4000"
+    networks:
+      - tesla
+    env_file: ./envs/tesla.env
+  teslamate-db:
+    image: postgres:13-alpine
+    container_name: teslamate-db
+    restart: unless-stopped
+    user: ${RUN_USER:-1000:1000}
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+    networks:
+      - tesla
+    volumes:
+      - ./teslamate/teslamate-db:/var/lib/postgresql/data
+    env_file:
+      - ./envs/common.env
+      - ./envs/tesla-db.env
+  teslamate-grafana:
+    image: teslamate/grafana:latest
+    container_name: teslamate-grafana
+    restart: unless-stopped
+    user: ${RUN_USER:-1000:1000}
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "50111:3000"
+    networks:
+      - tesla
+    volumes:
+      - ./teslamate/grafana:/var/lib/grafana
+    env_file:
+      - ./envs/common.env
+      - ./envs/tesla-graf.env
+  teslamate-mqtt:
+    image: eclipse-mosquitto:1.6
+    container_name: teslamate-mqtt
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "50112:1883"
+    networks:
+      - tesla
+    volumes:
+      - ./teslamate/mosquitto-conf:/mosquitto/config
+      - ./teslamate/mosquitto-data:/mosquitto/data
+      - ./teslamate/mosquitto-log:/mosquitto/log
+    env_file: ./envs/common.env
+  # Wiki
+  wikijs:
+    image: requarks/wiki:2
+    container_name: wikijs
+    restart: unless-stopped
+    depends_on:
+      - wikijs-db
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "60000:3000"
+    networks:
+      - wikijs
+    volumes:
+      - ./wikijs/data:/wiki/data/content
+    env_file:
+      - ./envs/common.env
+      - ./envs/wikijs.env
+  wikijs-db:
+    image: postgres:11-alpine
+    container_name: wikijs-db
+    restart: unless-stopped
+    user: ${RUN_USER:-1000:1000}
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    networks:
+      - wikijs
+    volumes:
+      - ./wikijs/db:/var/lib/postgresql/data
+    env_file:
+      - ./envs/common.env
+      - ./envs/wikijs-db.env
+  # youtube-dl web
+  youtubedl:
+    image: nbr23/youtube-dl-server:youtube-dl
+    container_name: youtubedl
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "48080:8080"
+    networks:
+      - youtubedl
+    volumes:
+      - ./youtube:/youtube-dl
+    env_file:
+      - ./envs/common.env
+      - ./envs/youtubedl.env
+  # Watchtower
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    command: --interval 21600 --label-enable --cleanup
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  # lichess fishnet
+  fishnet:
+    image: niklasf/fishnet:latest
+    container_name: fishnet
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    env_file:
+      - ./envs/common.env
+      - ./envs/fishnet.env
+# Networks
+networks:
+  irc:
+    driver: bridge
+  minecraft:
+    driver: bridge
+  mumble:
+    driver: bridge
+  music:
+    driver: bridge
+  plex:
+    driver: bridge
+  rss:
+    driver: bridge
+  tesla:
+    driver: bridge
+  wikijs:
+    driver: bridge
+  youtubedl:
+    driver: bridge
+  nitter:
+    driver: bridge
