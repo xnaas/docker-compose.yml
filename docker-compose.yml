@@ -12,6 +12,7 @@ services:
     ports:
       - "443:443"
     networks:
+      - bibliogram
       - irc
       - music
       - nitter
@@ -346,8 +347,25 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/fishnet.env
+  # Bibliogram
+  bibliogram:
+    image: cloudrac3r/bibliogram:latest
+    container_name: bibliogram
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "10407:10407"
+    networks:
+      - bibliogram
+    volumes:
+      - ./bibliogram/config.js:/app/config.js:ro
+      - ./bibliogram/db:/app/db
+    env_file: ./envs/common.env
 # Networks
 networks:
+  bibliogram:
+    driver: bridge
   irc:
     driver: bridge
   minecraft:
