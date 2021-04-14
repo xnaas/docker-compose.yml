@@ -26,7 +26,6 @@ services:
       - ./caddy/config:/config
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./zz_shared:/www/shared:ro
-      - /mnt/media/p.xnaas.info:/www/p.xnaas.info:ro
       - /mnt/media/websites:/www/websites:ro
       - /mnt/media/ShareX/Screenshots/temp:/www/tmp:ro
       - /mnt/media/public:/www/download:ro
