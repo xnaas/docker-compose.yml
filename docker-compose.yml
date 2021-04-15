@@ -374,6 +374,8 @@ networks:
     driver: bridge
   music:
     driver: bridge
+  nitter:
+    driver: bridge
   plex:
     driver: bridge
   rss:
@@ -383,6 +385,4 @@ networks:
   wikijs:
     driver: bridge
   youtubedl:
-    driver: bridge
-  nitter:
     driver: bridge
