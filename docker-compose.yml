@@ -322,7 +322,8 @@ services:
     networks:
       - youtubedl
     volumes:
-      - ./youtube:/youtube-dl
+      - ./youtube/data:/youtube-dl
+      - ./youtube/config:/app_config
     env_file:
       - ./envs/common.env
       - ./envs/youtubedl.env
