@@ -203,7 +203,7 @@ services:
       - ./rss:/config
     env_file: ./envs/common.env
   rss-bridge:
-    image: rssbridge/rss-bridge:stable
+    image: rssbridge/rss-bridge:latest
     container_name: rss-bridge
     restart: unless-stopped
     labels:
@@ -218,7 +218,7 @@ services:
     env_file: ./envs/common.env
   # Tesla
   teslamate:
-    image: teslamate/teslamate:latest
+    image: teslamate/teslamate:edge
     container_name: teslamate
     restart: unless-stopped
     labels:
@@ -245,7 +245,7 @@ services:
       - ./envs/common.env
       - ./envs/tesla-db.env
   teslamate-grafana:
-    image: teslamate/grafana:latest
+    image: teslamate/grafana:edge
     container_name: teslamate-grafana
     restart: unless-stopped
     user: ${RUN_USER:-1000:1000}
