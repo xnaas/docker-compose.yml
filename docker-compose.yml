@@ -1,9 +1,9 @@
 version: "3.7"
 services:
-  # Caddy
-  caddy:
-    image: xnaas/caddy:latest
-    container_name: caddy
+  # Nginx
+  nginx:
+    image: ghcr.io/linuxserver/swag
+    container_name: nginx
     restart: unless-stopped
     labels:
       - com.centurylinklabs.watchtower.enable=true
@@ -22,16 +22,13 @@ services:
       - wikijs
       - youtubedl
     volumes:
-      - ./caddy/data:/data
-      - ./caddy/config:/config
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-      - ./zz_shared:/www/shared:ro
+      - ./nginx:/config
       - /mnt/media/websites:/www/websites:ro
       - /mnt/media/ShareX/Screenshots/temp:/www/tmp:ro
       - /mnt/media/public:/www/download:ro
     env_file:
       - ./envs/common.env
-      - ./envs/caddy.env
+      - ./envs/nginx.env
   # IRC
   thelounge:
     image: thelounge/thelounge:4.3.0-pre.1-alpine
