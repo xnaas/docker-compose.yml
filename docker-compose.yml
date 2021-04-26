@@ -45,13 +45,12 @@ services:
       # - ./thelounge-themes:/usr/local/share/.config/yarn/global/node_modules/thelounge/public/themes
     env_file: ./envs/common.env
   ircd:
-    image: oragono/oragono:v2.6.0
+    image: oragono/oragono:v2.6.1
     container_name: ircd
     restart: unless-stopped
     labels:
       - com.centurylinklabs.watchtower.enable=false
     ports:
-      - "6667:6667"
       - "6697:6697"
     networks:
       - irc
