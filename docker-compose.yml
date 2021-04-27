@@ -12,15 +12,11 @@ services:
     ports:
       - "443:443"
     networks:
-      - bibliogram
+      - general
       - irc
-      - music
-      - nitter
       - plex
-      - rss
       - tesla
       - wikijs
-      - youtubedl
     volumes:
       - ./nginx:/config
       - /mnt/media/websites:/www/websites:ro
@@ -114,7 +110,7 @@ services:
     ports:
       - "4533:4533"
     networks:
-      - music
+      - general
     volumes:
       - ./music:/data
       - /mnt/media/music:/music:ro
@@ -131,7 +127,7 @@ services:
     ports:
       - "58080:8080"
     networks:
-      - nitter
+      - general
     volumes:
       - ./nitter/conf/nitter.conf:/src/nitter.conf
       - ./nitter/data:/data
@@ -197,7 +193,7 @@ services:
     ports:
       - "47602:80"
     networks:
-      - rss
+      - general
     volumes:
       - ./rss:/config
     env_file: ./envs/common.env
@@ -210,7 +206,7 @@ services:
     ports:
       - "51080:80"
     networks:
-      - rss
+      - general
     volumes:
       - ./rss-bridge/whitelist.txt:/app/whitelist.txt
       - ./rss-bridge/config.ini.php:/app/config.ini.php
@@ -316,7 +312,7 @@ services:
     ports:
       - "48080:8080"
     networks:
-      - youtubedl
+      - general
     volumes:
       - ./youtube/data:/youtube-dl
       - ./youtube/config:/app_config
@@ -353,14 +349,28 @@ services:
     ports:
       - "10407:10407"
     networks:
-      - bibliogram
+      - general
     volumes:
       - ./bibliogram/config.js:/app/config.js:ro
       - ./bibliogram/db:/app/db
     env_file: ./envs/common.env
+  # Status
+  status-asak:
+    image: twinproduction/gatus:latest
+    container_name: status-asak
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "38080:8080"
+    networks:
+      - general
+    volumes:
+      - ./status-asak/config.yaml:/config/config.yaml
+    env_file: ./envs/common.env
 # Networks
 networks:
-  bibliogram:
+  general:
     driver: bridge
   irc:
     driver: bridge
@@ -368,17 +378,9 @@ networks:
     driver: bridge
   mumble:
     driver: bridge
-  music:
-    driver: bridge
-  nitter:
-    driver: bridge
   plex:
-    driver: bridge
-  rss:
     driver: bridge
   tesla:
     driver: bridge
   wikijs:
-    driver: bridge
-  youtubedl:
     driver: bridge
