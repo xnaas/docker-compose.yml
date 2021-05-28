@@ -366,7 +366,8 @@ services:
     networks:
       - general
     volumes:
-      - ./status-asak/config.yaml:/config/config.yaml
+      - ./status-asak/config.yaml:/config/config.yaml:ro
+      - ./status-asak/history:/config/history
     env_file: ./envs/common.env
 # Networks
 networks:
