@@ -170,18 +170,18 @@ services:
       - ./plex/appdata/Library/Application Support/Plex Media Server/Logs:/logs:ro
       - ./zz_shared:/shared:ro
     env_file: ./envs/common.env
-  ombi:
-    container_name: ombi
-    image: ghcr.io/linuxserver/ombi:development
+  overseerr:
+    container_name: overseerr
+    image: ghcr.io/linuxserver/overseerr:latest
     restart: unless-stopped
     labels:
       - com.centurylinklabs.watchtower.enable=true
     ports:
-      - "3579:3579"
+      - "5055:5055"
     networks:
       - plex
     volumes:
-      - ./ombi:/config
+      - ./overseerr:/config
     env_file: ./envs/common.env
   # RSS
   rss:
