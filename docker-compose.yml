@@ -86,7 +86,7 @@ services:
       - ./envs/minecraft.env
   # Mumble/Murmur
   mumble:
-    image: xnaas/murmur:latest
+    image: ghcr.io/xnaas/docker-murmur:latest
     container_name: mumble
     restart: unless-stopped
     labels:
