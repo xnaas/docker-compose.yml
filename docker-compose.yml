@@ -27,7 +27,7 @@ services:
       - ./envs/nginx.env
   # IRC
   thelounge:
-    image: thelounge/thelounge:4.3.0-pre.1-alpine
+    image: thelounge/thelounge:4.3.0-pre.2-alpine
     container_name: thelounge
     restart: unless-stopped
     labels:
@@ -41,9 +41,11 @@ services:
       # - ./thelounge-themes:/usr/local/share/.config/yarn/global/node_modules/thelounge/public/themes
     env_file: ./envs/common.env
   ircd:
-    image: oragono/oragono:v2.6.1
+    image: ergochat/ergo:latest
+    # image: oragono/oragono:v2.6.1
     container_name: ircd
     restart: unless-stopped
+    # user: 1000:1000
     labels:
       - com.centurylinklabs.watchtower.enable=false
     ports:
