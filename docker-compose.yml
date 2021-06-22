@@ -306,7 +306,7 @@ services:
       - ./envs/wikijs-db.env
   # youtube-dl web
   youtubedl:
-    image: nbr23/youtube-dl-server:youtube-dl
+    image: nbr23/youtube-dl-server:latest
     container_name: youtubedl
     restart: unless-stopped
     labels:
@@ -389,6 +389,28 @@ services:
       - /mnt/media/websites/xnaas.info/avatar.png:/web/static/img/logo.png:ro
       - /mnt/media/websites/xnaas.info/favicon.ico:/web/static/favicon.ico:ro
     env_file: ./envs/common.env
+  # Drive Monitoring
+  scrutiny:
+    image: ghcr.io/linuxserver/scrutiny:latest
+    container_name: scrutiny
+    restart: unless-stopped
+    labels:
+      - com.watchtower.centurylinklabs.enable=true
+    cap_add:
+      - SYS_RAWIO
+    ports:
+      - "8080:8080"
+    networks:
+      - general
+    volumes:
+      - ./scrutiny:/config
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/sda:/dev/sda
+      - /dev/sdb:/dev/sdb
+    env_file:
+      - ./envs/common.env
+      - ./envs/scrutiny.env
 # Networks
 networks:
   general:
