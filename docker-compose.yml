@@ -27,7 +27,7 @@ services:
       - ./envs/nginx.env
   # IRC
   thelounge:
-    image: thelounge/thelounge:4.3.0-pre.2-alpine
+    image: thelounge/thelounge:4.3.0-pre.4-alpine
     container_name: thelounge
     restart: unless-stopped
     labels:
@@ -52,6 +52,37 @@ services:
     volumes:
       - ./ircd:/ircd
     env_file: ./envs/common.env
+  # Joplin (Notes)
+  joplin:
+    image: joplin/server:latest
+    container_name: joplin
+    restart: unless-stopped
+    depends_on:
+      - joplin-db
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    networks:
+      - general
+      - joplin
+    ports:
+      - "22300:22300"
+    env_file:
+      - ./envs/common.env
+      - ./envs/joplin.env
+  joplin-db:
+    image: postgres:13-alpine
+    container_name: joplin-db
+    restart: unless-stopped
+    user: ${RUN_USER:-1000:1000}
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    networks:
+      - joplin
+    volumes:
+      - ./joplin:/var/lib/postgresql/data
+    env_file:
+      - ./envs/common.env
+      - ./envs/joplin-db.env
   # Matterbridge
   matterbridge:
     image: 42wim/matterbridge:stable
@@ -413,6 +444,8 @@ networks:
   general:
     driver: bridge
   irc:
+    driver: bridge
+  joplin:
     driver: bridge
   minecraft:
     driver: bridge
