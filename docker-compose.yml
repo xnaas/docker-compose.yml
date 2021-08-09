@@ -75,7 +75,7 @@ services:
     restart: unless-stopped
     user: ${RUN_USER:-1000:1000}
     labels:
-      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.enable=false
     networks:
       - joplin
     volumes:
@@ -261,7 +261,7 @@ services:
     restart: unless-stopped
     user: ${RUN_USER:-1000:1000}
     labels:
-      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.enable=false
     networks:
       - tesla
     volumes:
