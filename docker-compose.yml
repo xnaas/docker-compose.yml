@@ -96,24 +96,6 @@ services:
     volumes:
       - ./matterbridge:/etc/matterbridge
     env_file: ./envs/common.env
-  # Minecraft
-  minecraft:
-    image: itzg/minecraft-bedrock-server:latest
-    container_name: minecraft
-    restart: unless-stopped
-    stdin_open: true
-    tty: true
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
-    ports:
-      - "19132:19132/udp"
-    networks:
-      - minecraft
-    volumes:
-      - ./minecraft:/data
-    env_file:
-      - ./envs/common.env
-      - ./envs/minecraft.env
   # Mumble/Murmur
   mumble:
     image: ghcr.io/xnaas/docker-murmur:latest
@@ -439,6 +421,38 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/scrutiny.env
+  # Send
+  send:
+    image: registry.gitlab.com/timvisee/send:latest
+    container_name: send
+    restart: unless-stopped
+    user: 1000:1000
+    depends_on:
+      - send-redis
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "51234:1234"
+    networks:
+      - general
+      - send
+    volumes:
+      - /mnt/media/send:/uploads
+    env_file:
+      - ./envs/common.env
+      - ./envs/send.env
+  send-redis:
+    image: redis:alpine
+    container_name: send-redis
+    restart: unless-stopped
+    user: 1000:1000
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    networks:
+      - send
+    volumes:
+      - ./send/redis:/data
+    env_file: ./envs/common.env
 # Networks
 networks:
   general:
@@ -447,11 +461,11 @@ networks:
     driver: bridge
   joplin:
     driver: bridge
-  minecraft:
-    driver: bridge
   mumble:
     driver: bridge
   plex:
+    driver: bridge
+  send:
     driver: bridge
   tesla:
     driver: bridge
