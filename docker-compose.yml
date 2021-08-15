@@ -368,7 +368,7 @@ services:
     env_file: ./envs/common.env
   # Status
   status-asak:
-    image: twinproduction/gatus:latest
+    image: twinproduction/gatus:v2.8.2
     container_name: status-asak
     restart: unless-stopped
     labels:
@@ -384,7 +384,7 @@ services:
       - /mnt/media/websites/actionsack.com/favicon.ico:/web/static/favicon.ico:ro
     env_file: ./envs/common.env
   status-xnaas:
-    image: twinproduction/gatus:latest
+    image: twinproduction/gatus:v2.8.2
     container_name: status-xnaas
     restart: unless-stopped
     labels:
