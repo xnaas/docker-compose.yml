@@ -372,7 +372,7 @@ services:
     container_name: status-asak
     restart: unless-stopped
     labels:
-      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.enable=false
     ports:
       - "38080:8080"
     networks:
@@ -388,7 +388,7 @@ services:
     container_name: status-xnaas
     restart: unless-stopped
     labels:
-      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.enable=false
     ports:
       - "38081:8080"
     networks:
