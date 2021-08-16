@@ -1,12 +1,11 @@
-version: "3.7"
+version: "3.8"
 services:
-  # Nginx
+  ###########
+  #  nginx  #
   nginx:
     image: ghcr.io/linuxserver/swag
     container_name: nginx
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     cap_add:
       - NET_ADMIN
     ports:
@@ -15,8 +14,6 @@ services:
       - general
       - irc
       - plex
-      - tesla
-      - wikijs
     volumes:
       - ./nginx:/config
       - /mnt/media/websites:/www/websites:ro
@@ -25,13 +22,72 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/nginx.env
-  # IRC
+  #  nginx  #
+  ###########
+
+
+  ##############
+  # Bibliogram #
+  bibliogram:
+    image: cloudrac3r/bibliogram:latest
+    container_name: bibliogram
+    restart: unless-stopped
+    ports:
+      - "10407:10407"
+    networks:
+      - general
+    volumes:
+      - ./bibliogram/config.js:/app/config.js:ro
+      - ./bibliogram/db:/app/db
+    env_file: ./envs/common.env
+  # Bibliogram #
+  ##############
+
+
+  ####################
+  # Drive Monitoring #
+  drives:
+    image: ghcr.io/linuxserver/scrutiny:latest
+    container_name: drives
+    restart: unless-stopped
+    cap_add:
+      - SYS_RAWIO
+    ports:
+      - "8080:8080"
+    networks:
+      - general
+    volumes:
+      - ./drives:/config
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/sda:/dev/sda
+      - /dev/sdb:/dev/sdb
+    env_file:
+      - ./envs/common.env
+      - ./envs/drives.env
+  # Drive Monitoring #
+  ####################
+
+
+  #############
+  #  fishnet  #
+  fishnet:
+    image: niklasf/fishnet:latest
+    container_name: fishnet
+    restart: unless-stopped
+    env_file:
+      - ./envs/common.env
+      - ./envs/fishnet.env
+  #  fishnet  #
+  #############
+
+
+  ###########
+  #   IRC   #
   thelounge:
     image: thelounge/thelounge:4.3.0-pre.4-alpine
     container_name: thelounge
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
     ports:
       - "59000:9000"
     networks:
@@ -43,8 +99,6 @@ services:
     image: ergochat/ergo:latest
     container_name: ircd
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
     ports:
       - "6697:6697"
     networks:
@@ -52,15 +106,19 @@ services:
     volumes:
       - ./ircd:/ircd
     env_file: ./envs/common.env
-  # Joplin (Notes)
+  #    IRC   #
+  ############
+
+
+  ############
+  #  Joplin  #
   joplin:
     image: joplin/server:latest
     container_name: joplin
     restart: unless-stopped
     depends_on:
-      - joplin-db
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
+      joplin-db:
+        condition: service_healthy
     networks:
       - general
       - joplin
@@ -73,9 +131,7 @@ services:
     image: postgres:13-alpine
     container_name: joplin-db
     restart: unless-stopped
-    user: ${RUN_USER:-1000:1000}
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
+    user: 1000:1000
     networks:
       - joplin
     volumes:
@@ -83,26 +139,37 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/joplin-db.env
-  # Matterbridge
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${JOPLIN_DB_NAME}", "-U", "${JOPLIN_DB_USER}" ]
+      interval: 10s
+      timeout: 45s
+      retries: 10
+  #  Joplin  #
+  ############
+
+
+  ################
+  # Matterbridge #
   matterbridge:
     image: 42wim/matterbridge:stable
     container_name: matterbridge
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     networks:
       - irc
       - mumble
     volumes:
       - ./matterbridge:/etc/matterbridge
     env_file: ./envs/common.env
-  # Mumble/Murmur
+  # Matterbridge #
+  ################
+
+
+  #################
+  # Mumble/Murmur #
   mumble:
     image: ghcr.io/xnaas/docker-murmur:latest
     container_name: mumble
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "64738:64738/tcp"
       - "64738:64738/udp"
@@ -111,14 +178,17 @@ services:
     volumes:
       - ./mumble:/data
     env_file: ./envs/common.env
-  # Music
+  # Mumble/Murmur #
+  #################
+
+
+  #############
+  #   Music   #
   music:
     image: deluan/navidrome:latest
     container_name: music
     restart: unless-stopped
     user: 1000:1000
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "4533:4533"
     networks:
@@ -129,13 +199,16 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/music.env
-  # Nitter
+  #   Music   #
+  #############
+
+
+  ############
+  #  Nitter  #
   nitter:
     image: zedeus/nitter:latest
     container_name: nitter
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "58080:8080"
     networks:
@@ -144,13 +217,16 @@ services:
       - ./nitter/conf/nitter.conf:/src/nitter.conf
       - ./nitter/data:/data
     env_file: ./envs/common.env
-  # Plex
+  #  Nitter  #
+  ############
+
+
+  ############
+  #   Plex   #
   plex:
     image: ghcr.io/linuxserver/plex:latest
     container_name: plex
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     network_mode: host
     devices:
       - /dev/dri:/dev/dri
@@ -171,8 +247,6 @@ services:
     container_name: plexpy
     image: tautulli/tautulli:beta
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "8181:8181"
     networks:
@@ -186,8 +260,6 @@ services:
     container_name: overseerr
     image: ghcr.io/linuxserver/overseerr:latest
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "5055:5055"
     networks:
@@ -195,13 +267,16 @@ services:
     volumes:
       - ./overseerr:/config
     env_file: ./envs/common.env
-  # RSS
+  #   Plex   #
+  ############
+
+
+  ###########
+  #   RSS   #
   rss:
     image: ghcr.io/linuxserver/freshrss:latest
     container_name: rss
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "47602:80"
     networks:
@@ -213,8 +288,6 @@ services:
     image: rssbridge/rss-bridge:latest
     container_name: rss-bridge
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "51080:80"
     networks:
@@ -223,27 +296,32 @@ services:
       - ./rss-bridge/whitelist.txt:/app/whitelist.txt
       - ./rss-bridge/config.ini.php:/app/config.ini.php
     env_file: ./envs/common.env
-  # Tesla
+  #   RSS   #
+  ###########
+
+
+  ###########
+  #  Tesla  #
   teslamate:
     image: teslamate/teslamate:latest
     container_name: teslamate
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      teslamate-db:
+        condition: service_healthy
     cap_drop:
       - all
     ports:
       - "50110:4000"
     networks:
+      - general
       - tesla
     env_file: ./envs/tesla.env
   teslamate-db:
     image: postgres:13-alpine
     container_name: teslamate-db
     restart: unless-stopped
-    user: ${RUN_USER:-1000:1000}
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
+    user: 1000:1000
     networks:
       - tesla
     volumes:
@@ -251,16 +329,22 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/tesla-db.env
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${TESLA_DB_NAME}", "-U", "${TESLA_DB_USER}" ]
+      interval: 10s
+      timeout: 45s
+      retries: 10
   teslamate-grafana:
     image: teslamate/grafana:latest
     container_name: teslamate-grafana
     restart: unless-stopped
-    user: ${RUN_USER:-1000:1000}
+    user: 1000:1000
     labels:
       - com.centurylinklabs.watchtower.enable=true
     ports:
       - "50111:3000"
     networks:
+      - general
       - tesla
     volumes:
       - ./teslamate/grafana:/var/lib/grafana
@@ -282,18 +366,23 @@ services:
       - ./teslamate/mosquitto-data:/mosquitto/data
       - ./teslamate/mosquitto-log:/mosquitto/log
     env_file: ./envs/common.env
-  # Wiki
+  #  Tesla  #
+  ###########
+
+
+  ############
+  #   Wiki   #
   wikijs:
     image: requarks/wiki:2
     container_name: wikijs
     restart: unless-stopped
     depends_on:
-      - wikijs-db
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
+      wikijs-db:
+        condition: service_healthy
     ports:
       - "60000:3000"
     networks:
+      - general
       - wikijs
     volumes:
       - ./wikijs/data:/wiki/data/content
@@ -304,9 +393,7 @@ services:
     image: postgres:11-alpine
     container_name: wikijs-db
     restart: unless-stopped
-    user: ${RUN_USER:-1000:1000}
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
+    user: 1000:1000
     networks:
       - wikijs
     volumes:
@@ -314,13 +401,21 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/wikijs-db.env
-  # youtube-dl web
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${WIKI_DB_NAME}", "-U", "${WIKI_DB_USER}" ]
+      interval: 10s
+      timeout: 45s
+      retries: 10
+  #   Wiki   #
+  ############
+
+
+  ##############
+  # youtube-dl #
   youtubedl:
     image: nbr23/youtube-dl-server:latest
     container_name: youtubedl
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "48080:8080"
     networks:
@@ -331,48 +426,16 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/youtubedl.env
-  # Watchtower
-  watchtower:
-    image: containrrr/watchtower:latest
-    container_name: watchtower
-    restart: unless-stopped
-    command: --interval 21600 --label-enable --cleanup
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-  # lichess fishnet
-  fishnet:
-    image: niklasf/fishnet:latest
-    container_name: fishnet
-    restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
-    env_file:
-      - ./envs/common.env
-      - ./envs/fishnet.env
-  # Bibliogram
-  bibliogram:
-    image: cloudrac3r/bibliogram:latest
-    container_name: bibliogram
-    restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
-    ports:
-      - "10407:10407"
-    networks:
-      - general
-    volumes:
-      - ./bibliogram/config.js:/app/config.js:ro
-      - ./bibliogram/db:/app/db
-    env_file: ./envs/common.env
-  # Status
+  # youtube-dl #
+  ##############
+
+
+  ############
+  #  Status  #
   status-asak:
     image: twinproduction/gatus:v2.8.2
     container_name: status-asak
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
     ports:
       - "38080:8080"
     networks:
@@ -387,8 +450,6 @@ services:
     image: twinproduction/gatus:v2.8.2
     container_name: status-xnaas
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
     ports:
       - "38081:8080"
     networks:
@@ -399,38 +460,20 @@ services:
       - /mnt/media/websites/xnaas.info/avatar.png:/web/static/img/logo.png:ro
       - /mnt/media/websites/xnaas.info/favicon.ico:/web/static/favicon.ico:ro
     env_file: ./envs/common.env
-  # Drive Monitoring
-  scrutiny:
-    image: ghcr.io/linuxserver/scrutiny:latest
-    container_name: scrutiny
-    restart: unless-stopped
-    labels:
-      - com.watchtower.centurylinklabs.enable=true
-    cap_add:
-      - SYS_RAWIO
-    ports:
-      - "8080:8080"
-    networks:
-      - general
-    volumes:
-      - ./scrutiny:/config
-      - /run/udev:/run/udev:ro
-    devices:
-      - /dev/sda:/dev/sda
-      - /dev/sdb:/dev/sdb
-    env_file:
-      - ./envs/common.env
-      - ./envs/scrutiny.env
-  # Send
+  #  Status  #
+  ############
+
+
+  ############
+  #   Send   #
   send:
     image: registry.gitlab.com/timvisee/send:latest
     container_name: send
     restart: unless-stopped
     user: 1000:1000
     depends_on:
-      - send-redis
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
+      send-redis:
+        condition: service_healthy
     ports:
       - "51234:1234"
     networks:
@@ -446,14 +489,22 @@ services:
     container_name: send-redis
     restart: unless-stopped
     user: 1000:1000
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     networks:
       - send
     volumes:
       - ./send/redis:/data
     env_file: ./envs/common.env
-# Networks
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 45s
+      retries: 10
+  #   Send   #
+  ############
+
+
+##############
+# Networking #
 networks:
   general:
     driver: bridge
