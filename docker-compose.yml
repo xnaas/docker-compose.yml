@@ -339,8 +339,6 @@ services:
     container_name: teslamate-grafana
     restart: unless-stopped
     user: 1000:1000
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "50111:3000"
     networks:
@@ -355,8 +353,6 @@ services:
     image: eclipse-mosquitto:1.6
     container_name: teslamate-mqtt
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "50112:1883"
     networks:
