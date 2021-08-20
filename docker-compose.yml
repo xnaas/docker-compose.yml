@@ -13,6 +13,7 @@ services:
     networks:
       - general
       - irc
+      - owncast
       - plex
     volumes:
       - ./nginx:/config
@@ -53,7 +54,7 @@ services:
     cap_add:
       - SYS_RAWIO
     ports:
-      - "8080:8080"
+      - "58888:8080"
     networks:
       - general
     volumes:
@@ -219,6 +220,24 @@ services:
     env_file: ./envs/common.env
   #  Nitter  #
   ############
+
+
+  #############
+  #  OwnCast  #
+  owncast:
+    image: gabekangas/owncast:latest
+    container_name: owncast
+    restart: unless-stopped
+    ports:
+      - "58088:8080"
+      - "1935:1935"
+    networks:
+      - owncast
+    volumes:
+      - ./owncast:/app/data
+    env_file: ./envs/common.env
+  #  OwnCast  #
+  #############
 
 
   ############
@@ -512,6 +531,8 @@ networks:
   joplin:
     driver: bridge
   mumble:
+    driver: bridge
+  owncast:
     driver: bridge
   plex:
     driver: bridge
