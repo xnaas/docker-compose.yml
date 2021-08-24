@@ -450,22 +450,8 @@ services:
 
   ############
   #  Status  #
-  status-asak:
-    image: twinproduction/gatus:v2.8.2
-    container_name: status-asak
-    restart: unless-stopped
-    ports:
-      - "38080:8080"
-    networks:
-      - general
-    volumes:
-      - ./status-asak/config.yaml:/config/config.yaml:ro
-      - ./status-asak/history:/config/history
-      - /mnt/media/websites/actionsack.com/avatar.png:/web/static/img/logo.png:ro
-      - /mnt/media/websites/actionsack.com/favicon.ico:/web/static/favicon.ico:ro
-    env_file: ./envs/common.env
   status-xnaas:
-    image: twinproduction/gatus:v2.8.2
+    image: twinproduction/gatus:v2.9.0
     container_name: status-xnaas
     restart: unless-stopped
     ports:
