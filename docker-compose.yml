@@ -449,26 +449,6 @@ services:
 
 
   ############
-  #  Status  #
-  status-xnaas:
-    image: twinproduction/gatus:v2.9.0
-    container_name: status-xnaas
-    restart: unless-stopped
-    ports:
-      - "38081:8080"
-    networks:
-      - general
-    volumes:
-      - ./status-xnaas/config.yaml:/config/config.yaml:ro
-      - ./status-xnaas/history:/config/history
-      - /mnt/media/websites/xnaas.info/avatar.png:/web/static/img/logo.png:ro
-      - /mnt/media/websites/xnaas.info/favicon.ico:/web/static/favicon.ico:ro
-    env_file: ./envs/common.env
-  #  Status  #
-  ############
-
-
-  ############
   #   Send   #
   send:
     image: registry.gitlab.com/timvisee/send:latest
