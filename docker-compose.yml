@@ -431,7 +431,7 @@ services:
   ##############
   # youtube-dl #
   youtubedl:
-    image: nbr23/youtube-dl-server:latest
+    image: nbr23/youtube-dl-server:yt-dlp
     container_name: youtubedl
     restart: unless-stopped
     ports:
@@ -464,7 +464,7 @@ services:
       - general
       - send
     volumes:
-      - /mnt/media/send:/uploads
+      - ./send/uploads:/uploads
     env_file:
       - ./envs/common.env
       - ./envs/send.env
@@ -485,6 +485,23 @@ services:
       retries: 10
   #   Send   #
   ############
+
+
+  #############
+  # Meme Wiki #
+  meme-wiki:
+    image: ghcr.io/linuxserver/dokuwiki:latest
+    container_name: meme-wiki
+    restart: unless-stopped
+    ports:
+      - "48880:80"
+    networks:
+      - general
+    volumes:
+      - ./meme-wiki:/config
+    env_file: ./envs/common.env
+  # Meme Wiki #
+  #############
 
 
 ##############
