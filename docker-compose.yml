@@ -96,6 +96,17 @@ services:
     volumes:
       - ./thelounge:/var/opt/thelounge
     env_file: ./envs/common.env
+  thelounge-public:
+    image: thelounge/thelounge:4.3.0-pre.4-alpine
+    container_name: thelounge-public
+    restart: unless-stopped
+    ports:
+      - "59001:9000"
+    networks:
+      - irc
+    volumes:
+      - ./thelounge-public:/var/opt/thelounge
+    env_file: ./envs/common.env
   ircd:
     image: ergochat/ergo:latest
     container_name: ircd
