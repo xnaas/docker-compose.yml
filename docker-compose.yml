@@ -197,7 +197,7 @@ services:
   #############
   #   Music   #
   music:
-    image: deluan/navidrome:0.45.1
+    image: deluan/navidrome:0.46.0
     container_name: music
     restart: unless-stopped
     user: 1000:1000
