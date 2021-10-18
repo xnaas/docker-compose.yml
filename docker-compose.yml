@@ -163,7 +163,7 @@ services:
   ################
   # Matterbridge #
   matterbridge:
-    image: 42wim/matterbridge:stable
+    image: ghcr.io/42wim/matterbridge:stable
     container_name: matterbridge
     restart: unless-stopped
     networks:
