@@ -233,6 +233,66 @@ services:
   ############
 
 
+  ####################
+  # OpenTogetherTube #
+  ott:
+    image: dyc3/opentogethertube:latest
+    container_name: ott
+    restart: unless-stopped
+    depends_on:
+      ott-redis:
+        condition: service_healthy
+      postgres_db:
+        condition: service_healthy
+    ports:
+      - "58889:8080"
+    networks:
+      - general
+      - ott
+    env_file:
+      - ./envs/common.env
+      - ./envs/ott.env
+
+  postgres_db:
+    image: postgres:13-alpine
+    container_name: ott-db
+    restart: unless-stopped
+    user: 1000:1000
+    expose:
+      - 5432
+    networks:
+      - ott
+    volumes:
+      - ./ott/db:/var/lib/postgresql/data
+    env_file:
+      - ./envs/common.env
+      - ./envs/ott-db.env
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${OTT_DB_NAME}", "-U", "${OTT_DB_USER}" ]
+      interval: 10s
+      timeout: 45s
+      retries: 10
+
+  ott-redis:
+    image: redis:alpine
+    container_name: ott-redis
+    restart: unless-stopped
+    user: 1000:1000
+    expose:
+      - 6379
+    networks:
+      - ott
+    volumes:
+      - ./ott/redis:/data
+    env_file: ./envs/common.env
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 45s
+      retries: 10
+  # OpenTogetherTube #
+  ####################
+
   #############
   #  OwnCast  #
   owncast:
@@ -525,6 +585,8 @@ networks:
   joplin:
     driver: bridge
   mumble:
+    driver: bridge
+  ott:
     driver: bridge
   owncast:
     driver: bridge
