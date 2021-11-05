@@ -86,7 +86,7 @@ services:
   ###########
   #   IRC   #
   thelounge:
-    image: thelounge/thelounge:4.3.0-pre.4-alpine
+    image: thelounge/thelounge:4.3.0-pre.6-alpine
     container_name: thelounge
     restart: unless-stopped
     ports:
@@ -97,7 +97,7 @@ services:
       - ./thelounge:/var/opt/thelounge
     env_file: ./envs/common.env
   thelounge-public:
-    image: thelounge/thelounge:4.3.0-pre.4-alpine
+    image: thelounge/thelounge:4.3.0-pre.6-alpine
     container_name: thelounge-public
     restart: unless-stopped
     ports:
@@ -108,7 +108,7 @@ services:
       - ./thelounge-public:/var/opt/thelounge
     env_file: ./envs/common.env
   ircd:
-    image: ergochat/ergo:latest
+    image: ghcr.io/ergochat/ergo:v2.8.0-rc1 
     container_name: ircd
     restart: unless-stopped
     ports:
