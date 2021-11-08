@@ -3,7 +3,7 @@ services:
   ###########
   #  nginx  #
   nginx:
-    image: ghcr.io/linuxserver/swag
+    image: lscr.io/linuxserver/swag
     container_name: nginx
     restart: unless-stopped
     cap_add:
@@ -48,7 +48,7 @@ services:
   ####################
   # Drive Monitoring #
   drives:
-    image: ghcr.io/linuxserver/scrutiny:latest
+    image: lscr.io/linuxserver/scrutiny:latest
     container_name: drives
     restart: unless-stopped
     cap_add:
@@ -314,7 +314,7 @@ services:
   ############
   #   Plex   #
   plex:
-    image: ghcr.io/linuxserver/plex:latest
+    image: lscr.io/linuxserver/plex:latest
     container_name: plex
     restart: unless-stopped
     network_mode: host
@@ -348,7 +348,7 @@ services:
     env_file: ./envs/common.env
   overseerr:
     container_name: overseerr
-    image: ghcr.io/linuxserver/overseerr:latest
+    image: lscr.io/linuxserver/overseerr:latest
     restart: unless-stopped
     ports:
       - "5055:5055"
@@ -364,7 +364,7 @@ services:
   ###########
   #   RSS   #
   rss:
-    image: ghcr.io/linuxserver/freshrss:latest
+    image: lscr.io/linuxserver/freshrss:latest
     container_name: rss
     restart: unless-stopped
     ports:
@@ -561,7 +561,7 @@ services:
   #############
   # Meme Wiki #
   meme-wiki:
-    image: ghcr.io/linuxserver/dokuwiki:latest
+    image: lscr.io/linuxserver/dokuwiki:latest
     container_name: meme-wiki
     restart: unless-stopped
     ports:
