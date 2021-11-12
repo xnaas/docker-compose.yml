@@ -30,7 +30,7 @@ services:
   ##############
   # Bibliogram #
   bibliogram:
-    image: cloudrac3r/bibliogram:latest
+    image: ghcr.io/xnaas/docker-bibliogram:latest
     container_name: bibliogram
     restart: unless-stopped
     ports:
