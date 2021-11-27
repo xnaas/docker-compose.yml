@@ -20,6 +20,7 @@ services:
       - /mnt/media/websites:/www/websites:ro
       - /mnt/media/ShareX/Screenshots/temp:/www/tmp:ro
       - /mnt/media/public:/www/download:ro
+      - ./nginx/nginx/mime.types:/etc/nginx/mime.types
     env_file:
       - ./envs/common.env
       - ./envs/nginx.env
@@ -86,7 +87,7 @@ services:
   ###########
   #   IRC   #
   thelounge:
-    image: thelounge/thelounge:4.3.0-pre.6-alpine
+    image: thelounge/thelounge:4.3.0-alpine
     container_name: thelounge
     restart: unless-stopped
     ports:
@@ -97,7 +98,7 @@ services:
       - ./thelounge:/var/opt/thelounge
     env_file: ./envs/common.env
   thelounge-public:
-    image: thelounge/thelounge:4.3.0-pre.6-alpine
+    image: thelounge/thelounge:4.3.0-alpine
     container_name: thelounge-public
     restart: unless-stopped
     expose:
@@ -459,46 +460,6 @@ services:
   ###########
 
 
-  ############
-  #   Wiki   #
-  wikijs:
-    image: requarks/wiki:2
-    container_name: wikijs
-    restart: unless-stopped
-    depends_on:
-      wikijs-db:
-        condition: service_healthy
-    expose:
-      - 3000
-    networks:
-      - general
-      - wikijs
-    volumes:
-      - ./wikijs/data:/wiki/data/content
-    env_file:
-      - ./envs/common.env
-      - ./envs/wikijs.env
-  wikijs-db:
-    image: postgres:11-alpine
-    container_name: wikijs-db
-    restart: unless-stopped
-    user: 1000:1000
-    networks:
-      - wikijs
-    volumes:
-      - ./wikijs/db:/var/lib/postgresql/data
-    env_file:
-      - ./envs/common.env
-      - ./envs/wikijs-db.env
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "${WIKI_DB_NAME}", "-U", "${WIKI_DB_USER}" ]
-      interval: 10s
-      timeout: 45s
-      retries: 10
-  #   Wiki   #
-  ############
-
-
   ##############
   # youtube-dl #
   youtubedl:
@@ -595,6 +556,4 @@ networks:
   send:
     driver: bridge
   tesla:
-    driver: bridge
-  wikijs:
     driver: bridge
