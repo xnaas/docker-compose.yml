@@ -253,7 +253,6 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/ott.env
-
   postgres_db:
     image: postgres:13-alpine
     container_name: ott-db
@@ -273,7 +272,6 @@ services:
       interval: 10s
       timeout: 45s
       retries: 10
-
   ott-redis:
     image: redis:alpine
     container_name: ott-redis
@@ -293,6 +291,7 @@ services:
       retries: 10
   # OpenTogetherTube #
   ####################
+
 
   #############
   #  OwnCast  #
