@@ -46,31 +46,6 @@ services:
   ##############
 
 
-  ####################
-  # Drive Monitoring #
-  drives:
-    image: lscr.io/linuxserver/scrutiny:latest
-    container_name: drives
-    restart: unless-stopped
-    cap_add:
-      - SYS_RAWIO
-    expose:
-      - 8080
-    networks:
-      - general
-    volumes:
-      - ./drives:/config
-      - /run/udev:/run/udev:ro
-    devices:
-      - /dev/sda:/dev/sda
-      - /dev/sdb:/dev/sdb
-    env_file:
-      - ./envs/common.env
-      - ./envs/drives.env
-  # Drive Monitoring #
-  ####################
-
-
   #############
   #  fishnet  #
   fishnet:
