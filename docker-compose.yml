@@ -173,7 +173,7 @@ services:
   #############
   #   Music   #
   music:
-    image: deluan/navidrome:0.46.0
+    image: deluan/navidrome:0.47.0
     container_name: music
     restart: unless-stopped
     user: 1000:1000
@@ -197,14 +197,32 @@ services:
     image: zedeus/nitter:latest
     container_name: nitter
     restart: unless-stopped
+    depends_on:
+      send-redis:
+        condition: service_healthy
     expose:
       - 8080
     networks:
       - general
+      - nitter
     volumes:
       - ./nitter/conf/nitter.conf:/src/nitter.conf
+    env_file: ./envs/common.env
+  nitter-redis:
+    image: redis:alpine
+    container_name: nitter-redis
+    restart: unless-stopped
+    user: 1000:1000
+    networks:
+      - nitter
+    volumes:
       - ./nitter/data:/data
     env_file: ./envs/common.env
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 45s
+      retries: 10
   #  Nitter  #
   ############
 
@@ -520,6 +538,8 @@ networks:
   joplin:
     driver: bridge
   mumble:
+    driver: bridge
+  nitter:
     driver: bridge
   ott:
     driver: bridge
