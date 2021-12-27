@@ -198,7 +198,7 @@ services:
     container_name: nitter
     restart: unless-stopped
     depends_on:
-      send-redis:
+      nitter-redis:
         condition: service_healthy
     expose:
       - 8080
