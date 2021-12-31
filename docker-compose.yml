@@ -354,6 +354,23 @@ services:
   ############
 
 
+  #########
+  # rimgu #
+  rimgu:
+    image: ghcr.io/xnaas/rimgu:latest
+    container_name: rimgu
+    restart: unless-stopped
+    expose:
+      - 8080
+    networks:
+      - general
+    env_file:
+      - ./envs/common.env
+      - ./envs/rimgu.env
+  # rimgu #
+  #########
+
+
   ###########
   #   RSS   #
   rss:
