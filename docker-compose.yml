@@ -20,7 +20,7 @@ services:
       - /mnt/media/websites:/www/websites:ro
       - /mnt/media/ShareX/Screenshots/temp:/www/tmp:ro
       - /mnt/media/public:/www/download:ro
-      - ./nginx/nginx/mime.types:/etc/nginx/mime.types
+      - ./nginx/nginx/mime.types:/etc/nginx/mime.types:ro
     env_file:
       - ./envs/common.env
       - ./envs/nginx.env
@@ -146,7 +146,7 @@ services:
       - irc
       - mumble
     volumes:
-      - ./matterbridge:/etc/matterbridge
+      - ./matterbridge:/etc/matterbridge:ro
     env_file: ./envs/common.env
   # Matterbridge #
   ################
@@ -173,7 +173,7 @@ services:
   #############
   #   Music   #
   music:
-    image: deluan/navidrome:0.47.0
+    image: deluan/navidrome:0.47.5
     container_name: music
     restart: unless-stopped
     user: 1000:1000
@@ -206,7 +206,7 @@ services:
       - general
       - nitter
     volumes:
-      - ./nitter/conf/nitter.conf:/src/nitter.conf
+      - ./nitter/conf/nitter.conf:/src/nitter.conf:ro
     env_file: ./envs/common.env
   nitter-redis:
     image: redis:alpine
@@ -374,7 +374,7 @@ services:
   ###########
   #   RSS   #
   rss:
-    image: lscr.io/linuxserver/freshrss:latest
+    image: lscr.io/linuxserver/freshrss:1.18.1
     container_name: rss
     restart: unless-stopped
     expose:
