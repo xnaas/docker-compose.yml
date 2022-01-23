@@ -84,7 +84,7 @@ services:
       - ./thelounge-public:/var/opt/thelounge
     env_file: ./envs/common.env
   ircd:
-    image: ghcr.io/ergochat/ergo:v2.8.0
+    image: ghcr.io/ergochat/ergo:v2.9.1
     container_name: ircd
     restart: unless-stopped
     ports:
