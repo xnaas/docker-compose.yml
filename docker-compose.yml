@@ -40,7 +40,6 @@ services:
       - general
     volumes:
       - ./bibliogram/config.js:/app/config.js:ro
-      - ./bibliogram/db:/app/db
     env_file: ./envs/common.env
   # Bibliogram #
   ##############
