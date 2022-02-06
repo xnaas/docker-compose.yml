@@ -33,7 +33,7 @@ services:
   ###############
   # cloudflared #
   cloudflared:
-    image: cloudflare/cloudflared:2022.1.3
+    image: cloudflare/cloudflared:2022.2.0
     container_name: cloudflared
     restart: unless-stopped
     user: 1000:1000
@@ -43,7 +43,7 @@ services:
     volumes:
       - ./cloudflared/xnaas:/etc/cloudflared:ro
   cloudflared-asak:
-    image: cloudflare/cloudflared:2022.1.3
+    image: cloudflare/cloudflared:2022.2.0
     container_name: cloudflared-asak
     restart: unless-stopped
     user: 1000:1000
@@ -99,16 +99,16 @@ services:
     volumes:
       - ./thelounge:/var/opt/thelounge
     env_file: ./envs/common.env
-  thelounge-public:
-    image: thelounge/thelounge:4.3.0-alpine
-    container_name: thelounge-public
+  webchat:
+    image: lscr.io/linuxserver/thelounge:latest
+    container_name: webchat
     restart: unless-stopped
     expose:
       - 9000
     networks:
       - irc
     volumes:
-      - ./thelounge-public:/var/opt/thelounge
+      - ./webchat/config.js:/config/config.js
     env_file: ./envs/common.env
   ircd:
     image: ghcr.io/ergochat/ergo:v2.9.1
@@ -171,7 +171,6 @@ services:
     restart: unless-stopped
     networks:
       - irc
-      - mumble
     volumes:
       - ./matterbridge:/etc/matterbridge:ro
     env_file: ./envs/common.env
@@ -189,7 +188,7 @@ services:
       - "64738:64738/tcp"
       - "64738:64738/udp"
     networks:
-      - mumble
+      - irc
     volumes:
       - ./mumble:/data
     env_file: ./envs/common.env
@@ -401,7 +400,7 @@ services:
   ###########
   #   RSS   #
   rss:
-    image: lscr.io/linuxserver/freshrss:1.18.1
+    image: lscr.io/linuxserver/freshrss:1.19.2
     container_name: rss
     restart: unless-stopped
     expose:
@@ -582,8 +581,6 @@ networks:
   irc:
     driver: bridge
   joplin:
-    driver: bridge
-  mumble:
     driver: bridge
   nitter:
     driver: bridge
