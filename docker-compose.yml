@@ -33,7 +33,7 @@ services:
   ###############
   # cloudflared #
   cloudflared:
-    image: cloudflare/cloudflared:2022.2.0
+    image: cloudflare/cloudflared:2022.2.2
     container_name: cloudflared
     restart: unless-stopped
     user: 1000:1000
@@ -43,7 +43,7 @@ services:
     volumes:
       - ./cloudflared/xnaas:/etc/cloudflared:ro
   cloudflared-asak:
-    image: cloudflare/cloudflared:2022.2.0
+    image: cloudflare/cloudflared:2022.2.2
     container_name: cloudflared-asak
     restart: unless-stopped
     user: 1000:1000
@@ -100,7 +100,7 @@ services:
       - ./thelounge:/var/opt/thelounge
     env_file: ./envs/common.env
   webchat:
-    image: lscr.io/linuxserver/thelounge:latest
+    image: ghcr.io/xnaas/thelounge:latest
     container_name: webchat
     restart: unless-stopped
     expose:
@@ -108,7 +108,7 @@ services:
     networks:
       - irc
     volumes:
-      - ./webchat/config.js:/config/config.js
+      - ./webchat:/var/opt/thelounge
     env_file: ./envs/common.env
   ircd:
     image: ghcr.io/ergochat/ergo:v2.9.1
@@ -482,7 +482,7 @@ services:
     image: eclipse-mosquitto:1.6
     container_name: teslamate-mqtt
     restart: unless-stopped
-    ports:
+    expose:
       - 1883
     networks:
       - tesla
