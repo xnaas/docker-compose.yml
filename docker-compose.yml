@@ -33,7 +33,7 @@ services:
   ###############
   # cloudflared #
   cloudflared:
-    image: cloudflare/cloudflared:2022.2.2
+    image: cloudflare/cloudflared:2022.3.1
     container_name: cloudflared
     restart: unless-stopped
     user: 1000:1000
@@ -43,7 +43,7 @@ services:
     volumes:
       - ./cloudflared/xnaas:/etc/cloudflared:ro
   cloudflared-asak:
-    image: cloudflare/cloudflared:2022.2.2
+    image: cloudflare/cloudflared:2022.3.1
     container_name: cloudflared-asak
     restart: unless-stopped
     user: 1000:1000
@@ -89,7 +89,7 @@ services:
   ###########
   #   IRC   #
   thelounge:
-    image: thelounge/thelounge:4.3.0-alpine
+    image: thelounge/thelounge:4.3.1-rc.1
     container_name: thelounge
     restart: unless-stopped
     ports:
