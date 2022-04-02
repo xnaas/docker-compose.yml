@@ -180,9 +180,9 @@ services:
 
   #################
   # Mumble/Murmur #
-  mumble:
-    image: ghcr.io/xnaas/docker-murmur:latest
-    container_name: mumble
+  murmur:
+    image: ghcr.io/xnaas/murmur:latest
+    container_name: murmur
     restart: unless-stopped
     ports:
       - "64738:64738/tcp"
