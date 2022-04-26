@@ -1,2 +1,1 @@
-# docker-compose.yml
-This is my Docker Compose file for...everything.
+# moved to [xnaas/webserver](https://github.com/xnaas/webserver/tree/main/docker)
