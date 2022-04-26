@@ -37,21 +37,11 @@ services:
     container_name: cloudflared
     restart: unless-stopped
     user: 1000:1000
-    command: ["tunnel", "--no-autoupdate", "--config", "/etc/cloudflared/xnaas.yaml", "--origincert", "/etc/cloudflared/xnaas.pem", "run"]
+    command: ["tunnel", "--no-autoupdate", "--config", "/etc/cloudflared/cf.yaml", "--origincert", "/etc/cloudflared/cf.pem", "run"]
     networks:
       - cf
     volumes:
-      - ./cloudflared/xnaas:/etc/cloudflared:ro
-  cloudflared-asak:
-    image: cloudflare/cloudflared:2022.4.0
-    container_name: cloudflared-asak
-    restart: unless-stopped
-    user: 1000:1000
-    command: ["tunnel", "--no-autoupdate", "--config", "/etc/cloudflared/actionsack.yaml", "--origincert", "/etc/cloudflared/actionsack.pem", "run"]
-    networks:
-      - cf
-    volumes:
-      - ./cloudflared/asak:/etc/cloudflared:ro
+      - ./cloudflared:/etc/cloudflared:ro
   # cloudflared #
   ###############
 
